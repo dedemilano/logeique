@@ -15,6 +15,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from os import getenv
 
 from pathlib import Path
 
@@ -80,17 +81,21 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 
+
+
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+
+load_dotenv()
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_NAME', 'your_db_name'),
-        'USER': os.getenv('POSTGRES_USER', 'your_db_user'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'your_password'),
-        'HOST': os.getenv('POSTGRES_HOST', 'your_host'),
-        'PORT': os.getenv('POSTGRES_PORT', '5432'),
+        'NAME': getenv('PGDATABASE'),
+        'USER': getenv('PGUSER'),
+        'PASSWORD': getenv('PGPASSWORD'),
+        'HOST': getenv('PGHOST'),
+        'PORT': getenv('PGPORT' , 5432),
         'OPTIONS': {
             'sslmode': 'require',  # Connexion sécurisée
         }

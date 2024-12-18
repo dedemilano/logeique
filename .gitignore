@@ -1,0 +1,22 @@
+# Environment variables
+.env
+.env.local
+.env.*
+migrations/
+
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+media
+
+
+# Backup files # 
+*.bak
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log

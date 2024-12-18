@@ -19,5 +19,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copier le code source
 COPY . .
 
+ENV PGHOST='ep-divine-poetry-a5pb40al.us-east-2.aws.neon.tech'
+ENV PGDATABASE='logeiqueDatabase'
+ENV PGUSER='logeiqueDatabase_owner'
+ENV PGPASSWORD='sAK67WLdNjBv'
+
 # Commande pour lancer l'application
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
