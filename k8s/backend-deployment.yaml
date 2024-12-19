@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
+  labels:
+    app: backend
 spec:
   replicas: 2
   selector:
@@ -14,7 +16,31 @@ spec:
     spec:
       containers:
       - name: backend
-        image: backend:latest
-        envFrom:
-        - configMapRef:
-            name: backend-config
+        image: logeique-backend:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: PGHOST
+          value: 'ep-divine-poetry-a5pb40al.us-east-2.aws.neon.tech'
+        - name: PGDATABASE
+          value: 'logeiqueDatabase'
+        - name: PGUSER
+          value: 'logeiqueDatabase_owner'
+        - name: PGPASSWORD
+          value: 'sAK67WLdNjBv'
+        - name: PGPORT
+          value: '5432'
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
+  type: ClusterIP
