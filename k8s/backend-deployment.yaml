@@ -1,22 +1,24 @@
+  # backend-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
+  name: logeique-backend
   labels:
-    app: backend
+    app: logeique-backend
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: backend
+      app: logeique-backend
   template:
     metadata:
       labels:
-        app: backend
+        app: logeique-backend
     spec:
       containers:
-      - name: backend
-        image: backend:latest
+      - name: logeique-backend
+        image: localhost/logeique-backend:latest
+        imagePullPolicy: Never
         ports:
         - containerPort: 8000
         env:
@@ -27,20 +29,27 @@ spec:
         - name: PGUSER
           value: 'logeiqueDatabase_owner'
         - name: PGPASSWORD
-          value: 'sAK67WLdNjBv'
-        - name: PGPORT
-          value: '5432'
-
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: password
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend-service
+  name: logeique-backend-service
 spec:
   selector:
-    app: backend
+    app: logeique-backend
   ports:
-  - protocol: TCP
-    port: 8000
-    targetPort: 8000
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
   type: ClusterIP

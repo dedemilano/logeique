@@ -1,7 +1,8 @@
+# ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: web-ingress
+  name: logeique-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
@@ -12,13 +13,13 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: backend-service
+            name: logeique-backend-service
             port:
               number: 8000
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: frontend-service
+            name: logeique-frontend-service
             port:
-              number: 80
+              number: 5173
