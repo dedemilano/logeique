@@ -1,5 +1,4 @@
 name: CI/CD Pipeline
-
 on:
   push:
     branches:
@@ -13,13 +12,41 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.10
+        python-version: '3.10'
     - name: Install dependencies
       run: pip install -r backend/requirements.txt
     - name: Run tests
       run: python backend/manage.py test
-  deploy:
+
+  build:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v3
+    - name: Build Backend Docker Image
+      run: docker build -t logeique-backend:${{ github.sha }} ./backend
+    - name: Build Frontend Docker Image
+      run: docker build -t logeique-frontend:${{ github.sha }} ./frontend
+    - name: Push Images to Registry
+      run: |
+        echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        docker push logeique-backend:${{ github.sha }}
+        docker push logeique-frontend:${{ github.sha }}
+
+  deploy:
+    needs: [test, build]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Configure Kubernetes
+      uses: azure/k8s-set-context@v2
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
     - name: Deploy to Kubernetes
-      run: kubectl apply -f k8s/
+      run: |
+        kubectl apply -f k8s/secrets.yaml
+        kubectl apply -f k8s/backend-deployment.yaml
+        kubectl apply -f k8s/frontend-deployment.yaml
+        kubectl apply -f k8s/ingress.yaml
+        kubectl set image deployment/logeique-backend logeique-backend=logeique-backend:${{ github.sha }}
+        kubectl set image deployment/logeique-frontend logeique-frontend:${{ github.sha }}
