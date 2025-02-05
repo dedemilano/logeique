@@ -19,4 +19,9 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('normal-auth/', include('normalauthentication.urls', namespace='normalauthentication')),
+    path('social-auth/', include('socialauthentication.urls', namespace='socialauthentication')),
+    path('client-management/', include('clientmanagement.urls', namespace='clientmanagmement')),
+    path('landlord-management/', include('landlordmanagement.urls', namespace='landlordmanagement')),
+    path('property-webscraping/', include('propertymanagement.urls', namespace='propertymanagement')),
 ]
