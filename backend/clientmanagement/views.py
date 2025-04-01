@@ -10,8 +10,9 @@ from django.contrib.auth.models import User
 from models import Client, Proposal
 from serializers import ClientSerializer, ProposalSerializer
 
-from models import House
-from serializers import HouseSerializer
+from housemanagement.models import House
+from housemanagement.serializers import HouseSerializer
+
 
 class AllClients(APIView):
 
@@ -78,7 +79,7 @@ class ClientProposals(APIView):
             return Response(response_msg)
 
 #   AJOUT D'UNE NOUVELLE PROPOSITION OU DEMANDE
-class AddClientProposal(APIView):
+class AddProposal(APIView):
     authentication_classes = [TokenAuthentication, ]
     permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
 
@@ -146,7 +147,7 @@ class ProposedHouses(APIView):
         serializer = HouseSerializer(query, many=True)
         return Response(serializer.data)
     
-class DemandesA(APIView):
+class ProposalsA(APIView):
     authentication_classes = [TokenAuthentication, ]
     permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
 
@@ -159,7 +160,7 @@ class DemandesA(APIView):
         serializer = ProposalSerializer(query, many=True)
         return Response(serializer.data)
     
-class DemandesB(APIView):
+class ProposalsB(APIView):
     authentication_classes = [TokenAuthentication, ]
     permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
 
@@ -172,7 +173,7 @@ class DemandesB(APIView):
         serializer = ProposalSerializer(query, many=True)
         return Response(serializer.data)
     
-class DemandesC(APIView):
+class ProposalsC(APIView):
     authentication_classes = [TokenAuthentication, ]
     permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
 
