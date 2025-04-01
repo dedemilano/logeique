@@ -42,7 +42,7 @@ class House(models.Model):
         return f"Ville: {self.ville} - Quartier: {self.quartier} - Loyer: {self.loyer}"
     
 
-class ImagesMaison(models.Model):
+class HouseImages(models.Model):
     maison = models.ForeignKey(House, on_delete=models.CASCADE, related_name="images")
     image = models.ImageField(null=True, blank=True, upload_to="img/maisons/")
 

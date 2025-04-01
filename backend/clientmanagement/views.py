@@ -145,3 +145,43 @@ class ProposedHouses(APIView):
         query = House.objects.all().order_by('-id')
         serializer = HouseSerializer(query, many=True)
         return Response(serializer.data)
+    
+class DemandesA(APIView):
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
+
+    def get(self, request):
+        query_proposal = Proposal.objects.all().order_by('-id')
+        query = []
+        for proposal in query_proposal:
+            if proposal.loyer_du_client > 0 and proposal.loyer_du_client < 70000:
+                query.append(proposal)
+        serializer = ProposalSerializer(query, many=True)
+        return Response(serializer.data)
+    
+class DemandesB(APIView):
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
+
+    def get(self, request):
+        query_proposal = Proposal.objects.all().order_by('-id')
+        query = []
+        for proposal in query_proposal:
+            if proposal.loyer_du_client >= 70000 and proposal.loyer_du_client < 150000:
+                query.append(proposal)
+        serializer = ProposalSerializer(query, many=True)
+        return Response(serializer.data)
+    
+class DemandesC(APIView):
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
+
+    def get(self, request):
+        query_proposal = Proposal.objects.all().order_by('-id')
+        query = []
+        for proposal in query_proposal:
+            if proposal.loyer_du_client >= 150000:
+                query.append(proposal)
+        serializer = ProposalSerializer(query, many=True)
+        return Response(serializer.data)
+

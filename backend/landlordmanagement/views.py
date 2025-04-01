@@ -4,6 +4,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.authentication import TokenAuthentication
 
+from models import *
+from serializers import *
+from django.contrib.auth.models import User
+
 
 # Create your views here.
 
@@ -34,23 +38,23 @@ class GetLandlord(APIView):
         return Response(response_msg)
 
 
-class AllProperties(APIView):
+class AllHouses(APIView):
 
     def get(self, request):
-        query = Property.objects.all().order_by('-id')
-        serializer = PropertySerializer(query, many=True)
+        query = House.objects.all().order_by('-id')
+        serializer = HouseSerializer(query, many=True)
         return Response(serializer.data)
 
 
-class LandlordProperties(APIView):
+class LandlordHouses(APIView):
     authentication_classes = [TokenAuthentication, ]
     permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
     
     def post(self, request):
         try:
             landlord = Landlord.objects.get(user=request.user)
-            query = Property.objects.filter(landlord=landlord).order_by('-id')
-            serializer = PropertySerializer(query, many=True)
+            query = House.objects.filter(landlord=landlord).order_by('-id')
+            serializer = HouseSerializer(query, many=True)
             return Response(serializer.data)
         except AssertionError as e:
             response_msg = {'error': True, 'type: ': str(e)}
@@ -59,7 +63,7 @@ class LandlordProperties(APIView):
 
     
 
-class AddProperty(APIView):
+class AddHouse(APIView):
     authentication_classes = [TokenAuthentication, ]
     permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
 
@@ -73,7 +77,7 @@ class AddProperty(APIView):
 
             if quan_dispo <= 1:
                 if request.data['radio'] == 'location':
-                    maison, created = Maison.objects.get_or_create(
+                    maison, created = House.objects.get_or_create(
                         landlord=landlord,
                         ville=request.data['ville'],
                         quartier=request.data['quartier'],
@@ -91,14 +95,14 @@ class AddProperty(APIView):
 
                     images = request.FILES.getlist('images')
                     for image in images:
-                        maison_images = ImagesMaison.objects.create(
+                        maison_images = HouseImages.objects.create(
                             maison = maison,
                             image = image
                         )
                         #maison = MaisonSerializer(maison)
                         response_msg = {'error': False, 'status': 200}
                 elif request.data['radio'] == 'vente':
-                    maison, created = Maison.objects.get_or_create(
+                    maison, created = House.objects.get_or_create(
                         landlord=landlord,
                         ville=request.data['ville'],
                         quartier=request.data['quartier'],
@@ -116,7 +120,7 @@ class AddProperty(APIView):
 
                     images = request.FILES.getlist('images')
                     for image in images:
-                        maison_images = ImagesMaison.objects.create(
+                        maison_images = HouseImages.objects.create(
                             maison = maison,
                             image = image
                         )
@@ -124,7 +128,7 @@ class AddProperty(APIView):
                         response_msg = {'error': False, 'status': 200}
 
                 elif request.data['radio'] == 'location_vente':
-                    maison, created = Maison.objects.get_or_create(
+                    maison, created = House.objects.get_or_create(
                         landlord=landlord,
                         ville=request.data['ville'],
                         quartier=request.data['quartier'],
@@ -142,7 +146,7 @@ class AddProperty(APIView):
                     
                     images = request.FILES.getlist('images')
                     for image in images:
-                        maison_images = ImagesMaison.objects.create(
+                        maison_images = HouseImages.objects.create(
                             maison = maison,
                             image = image
                         )
@@ -150,7 +154,7 @@ class AddProperty(APIView):
                         response_msg = {'error': False, 'status': 200}
             elif quan_dispo > 1:
                 if loc_ven == 1:
-                    Maison.objects.create(
+                    House.objects.create(
                         landlord=landlord,
                         ville=request.data['ville'],
                         quartier=request.data['quartier'],
@@ -166,7 +170,7 @@ class AddProperty(APIView):
                     )
 
                 elif loc_ven == 2:
-                    Maison.objects.create(
+                    House.objects.create(
                         landlord=landlord,
                         ville=request.data['ville'],
                         quartier=request.data['quartier'],
@@ -182,7 +186,7 @@ class AddProperty(APIView):
                     )
 
                 elif loc_ven == 3:
-                    Maison.objects.create(
+                    House.objects.create(
                         landlord=landlord,
                         ville=request.data['ville'],
                         quartier=request.data['quartier'],
@@ -209,7 +213,7 @@ class EditeMaison(APIView):
     def put(self, request, id):
         try:
             data = request.data
-            maison = Maison.objects.get(id=id)
+            maison = House.objects.get(id=id)
             loc_ven = data['loc_ven']
             quan_dispo = int(data['quan_dispo'])
             print(data['image'])
@@ -301,56 +305,22 @@ class EditeMaison(APIView):
             response_msg = {'error': True, 'type: ': str(e)}
         return Response(response_msg)
 
-class DeleteMaison(APIView):
+class DeleteHouse(APIView):
     authentication_classes = [TokenAuthentication, ]
     permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
 
     def delete(self, request, id):
         try:
-            maison = Maison.objects.get(id=id)
+            maison = House.objects.get(id=id)
             maison.delete()
             response_msg = {'error': False}
         except AssertionError as e:
             response_msg = {'error': True, 'type: ': str(e)}
         return Response(response_msg)
 
-class DemandesA(APIView):
-    authentication_classes = [TokenAuthentication, ]
-    permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
 
-    def get(self, request):
-        query_proposal = Proposal.objects.all().order_by('-id')
-        query = []
-        for proposal in query_proposal:
-            if proposal.loyer_du_client > 0 and proposal.loyer_du_client < 70000:
-                query.append(proposal)
-        serializer = ProposalSerializer(query, many=True)
-        return Response(serializer.data)
 
-class DemandesB(APIView):
-    authentication_classes = [TokenAuthentication, ]
-    permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
 
-    def get(self, request):
-        query_proposal = Proposal.objects.all().order_by('-id')
-        query = []
-        for proposal in query_proposal:
-            if proposal.loyer_du_client >= 70000 and proposal.loyer_du_client < 150000:
-                query.append(proposal)
-        serializer = ProposalSerializer(query, many=True)
-        return Response(serializer.data)
 
-class DemandesC(APIView):
-    authentication_classes = [TokenAuthentication, ]
-    permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
-
-    def get(self, request):
-        query_proposal = Proposal.objects.all().order_by('-id')
-        query = []
-        for proposal in query_proposal:
-            if proposal.loyer_du_client >= 150000:
-                query.append(proposal)
-        serializer = ProposalSerializer(query, many=True)
-        return Response(serializer.data)
 
 
