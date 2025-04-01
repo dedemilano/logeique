@@ -5,8 +5,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.authentication import TokenAuthentication
+from django.contrib.auth.models import User
 
 from models import Client, Proposal
+from serializers import ClientSerializer, ProposalSerializer
+
+from models import House
+from serializers import HouseSerializer
 
 class AllClients(APIView):
 
@@ -32,7 +37,7 @@ class GetClient(APIView):
             response_msg = {'error': True, 'type: ': str(e)}
         return Response(response_msg)
 
-class GetPropositionsMaisons(APIView):
+class GetHousesProposals(APIView):
     authentication_classes = [TokenAuthentication, ]
     permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
 
@@ -57,7 +62,7 @@ class AllProposals(APIView):
         return Response(response_msg)
 
 #   RECUPERATION / LISTE DES PROPOSITIONS OU DEMANDES D'UN SEUL CLIENT
-class Proposals(APIView):
+class ClientProposals(APIView):
     authentication_classes = [TokenAuthentication, ]
     permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
 
@@ -73,7 +78,7 @@ class Proposals(APIView):
             return Response(response_msg)
 
 #   AJOUT D'UNE NOUVELLE PROPOSITION OU DEMANDE
-class AddProposal(APIView):
+class AddClientProposal(APIView):
     authentication_classes = [TokenAuthentication, ]
     permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
 
@@ -98,7 +103,7 @@ class AddProposal(APIView):
         return Response(response_msg)
 
 #   EDITION D'UNE PROPOSITION OU DEMANDE EXISTANTE
-class EditeProposal(APIView):
+class EditProposal(APIView):
     authentication_classes = [TokenAuthentication, ]
     permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
 
@@ -132,11 +137,11 @@ class DeleteProposal(APIView):
             response_msg = {'error': True, 'type: ': str(e)}
         return Response(response_msg)
 
-class MaisonsProposees(APIView):
+class ProposedHouses(APIView):
     authentication_classes = [TokenAuthentication, ]
     permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
 
     def get(self, request):
-        query = Maison.objects.all().order_by('-id')
-        serializer = MaisonSerializer(query, many=True)
+        query = House.objects.all().order_by('-id')
+        serializer = HouseSerializer(query, many=True)
         return Response(serializer.data)
