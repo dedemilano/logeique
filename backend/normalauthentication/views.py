@@ -84,3 +84,17 @@ class UserStatus(APIView):
         except AssertionError as e:
             response_msg = {'error': True, 'type: ': str(e)}
         return Response(response_msg)
+    
+
+class GetUser(APIView):
+    permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
+    authentication_classes = [TokenAuthentication, ]
+
+    def post(self, request):
+        try:
+            query = User.objects.get(id=request.user.id)
+            serializer = UserSerializers(query)
+            return Response(serializer.data)
+        except AssertionError as e:
+            response_msg = {'error': True, 'type: ': str(e)}
+        return Response(response_msg)
