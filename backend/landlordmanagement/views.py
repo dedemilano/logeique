@@ -38,12 +38,7 @@ class GetLandlord(APIView):
         return Response(response_msg)
 
 
-class AllHouses(APIView):
 
-    def get(self, request):
-        query = House.objects.all().order_by('-id')
-        serializer = HouseSerializer(query, many=True)
-        return Response(serializer.data)
 
 
 class LandlordHouses(APIView):
