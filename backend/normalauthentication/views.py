@@ -9,6 +9,10 @@ from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth import authenticate, login
 from .serializers import UserSerializers
 
+from landlordmanagement.models import Landlord
+from clientmanagement.models import Client
+from django.contrib.auth.models import User
+
 
 # Vue pour la connexion (obtention des tokens JWT)
 class LoginView(APIView):
